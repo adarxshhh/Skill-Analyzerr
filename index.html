@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamer Skill Analyzer 9000</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap');
+
+        body {
+            background-color: #0f0f13;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: #1a1a24;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), 0 0 40px rgba(255, 0, 255, 0.1);
+            border: 2px solid #333;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: #00ffff;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            text-shadow: 2px 2px 0px #ff00ff;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #00ffff;
+            background: #000;
+            color: #fff;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+        }
+
+        button:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #loading {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #ffcc00;
+            font-weight: bold;
+            display: none;
+            animation: pulse 1s infinite alternate;
+        }
+
+        #result {
+            margin-top: 30px;
+            display: none;
+            animation: popIn 0.5s ease-out forwards;
+        }
+
+        .score-display {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 3rem;
+            margin: 20px 0;
+        }
+
+        .score-bad {
+            color: #ff3333;
+            text-shadow: 2px 2px 10px rgba(255, 51, 51, 0.5);
+        }
+
+        .score-good {
+            color: #33ff33;
+            text-shadow: 2px 2px 10px rgba(51, 255, 51, 0.5);
+        }
+
+        .rank-display {
+            font-size: 1.5rem;
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎮 Pro Gamer Analyzer 9000 🎮</h1>
+        <input type="text" id="gamerTag" placeholder="Enter Gamer Tag...">
+        <button id="analyzeBtn" onclick="startAnalysis()">Scan Skill Level</button>
+        
+        <div id="loading">Connecting to gaming servers...</div>
+        
+        <div id="result">
+            <h2 id="playerName"></h2>
+            <div class="score-display" id="score"></div>
+            <div class="rank-display" id="rank"></div>
+            <p id="footerText" style="color: #aaa; margin-top: 15px;"></p>
+        </div>
+
+        <audio id="failSound" src="dabba-player_plTvchQ7.mp3" preload="auto"></audio>
+        <audio id="winSound" src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3" preload="auto"></audio>
+    </div>
+
+    <script>
+        function startAnalysis() {
+            const tagInput = document.getElementById('gamerTag').value;
+            const playerName = tagInput.trim() === "" ? "Anonymous Noob" : tagInput;
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Stop any playing audio if they click again
+            document.getElementById('failSound').pause();
+            document.getElementById('winSound').pause();
+
+            // Reset UI
+            btn.disabled = true;
+            result.style.display = 'none';
+            loading.style.display = 'block';
+
+            // Fun, fake loading sequence
+            const loadingMessages = [
+                "Analyzing mouse movement...",
+                "Scanning rage-quit history...",
+                "Checking for aimbot...",
+                "Bypassing anti-cheat...",
+                "Calculating final verdict..."
+            ];
+
+            let step = 0;
+            const interval = setInterval(() => {
+                if (step < loadingMessages.length) {
+                    loading.innerText = loadingMessages[step];
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    showResults(playerName);
+                }
+            }, 1000); // 1 second per message
+        }
+
+        function showResults(playerName) {
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const scoreElement = document.getElementById('score');
+            
+            loading.style.display = 'none';
+            result.style.display = 'block';
+
+            // --- THE PRANK LOGIC ---
+            let skillLevel;
+            let rank = "";
+            let isShreyansh = playerName.toLowerCase() === "shreyansh";
+
+            if (isShreyansh) {
+                // Guaranteed under 20
+                skillLevel = Math.floor(Math.random() * 20); 
+                
+                // Bad Ranks
+                if (skillLevel < 5) rank = "Rank: Absolute Potato 🥔";
+                else if (skillLevel < 10) rank = "Rank: Target Practice 🎯";
+                else if (skillLevel < 15) rank = "Rank: Professional Spectator 🕶️";
+                else rank = "Rank: Heavy Backpack (Carried) 🎒";
+
+                // Styling and text for Shreyansh
+                scoreElement.className = "score-display score-bad";
+                document.getElementById('footerText').innerText = "Analysis Complete. Yikes.";
+                
+                // Play fail sound
+                const failAudio = document.getElementById('failSound');
+                failAudio.currentTime = 0;
+                failAudio.play().catch(e => console.log(e));
+
+            } else {
+                // Guaranteed 60 to 99 for anyone else
+                skillLevel = Math.floor(Math.random() * 40) + 60; 
+                
+                // Good Ranks
+                if (skillLevel < 70) rank = "Rank: Sweaty Tryhard 💦";
+                else if (skillLevel < 85) rank = "Rank: Esports Ready 🏆";
+                else if (skillLevel < 95) rank = "Rank: Literal Aimbot 🤖";
+                else rank = "Rank: Gaming Warlord 👑";
+
+                // Styling and text for others
+                scoreElement.className = "score-display score-good";
+                document.getElementById('footerText').innerText = "Analysis Complete. Legendary status confirmed.";
+                
+                // Play win sound
+                const winAudio = document.getElementById('winSound');
+                winAudio.currentTime = 0;
+                winAudio.play().catch(e => console.log(e));
+            }
+
+            // Update the HTML
+            document.getElementById('playerName').innerText = `Player: ${playerName}`;
+            document.getElementById('score').innerText = `${skillLevel}/100`;
+            document.getElementById('rank').innerText = rank;
+
+            // Re-enable button
+            btn.disabled = false;
+            btn.innerText = isShreyansh ? "Try Again (Won't Help)" : "Scan Another Legend";
+        }
+    </script>
+</body>
+</html>
